@@ -31,23 +31,17 @@ for c = 1:n
         currentlocation = currentlocation + traveled_distance;
         %Particle is backscattered
         if currentlocation < 0
-            currentlocation = 0;
-            BWScatteredParticle = BWScatteredParticle + 1;
             break
         end
         %Particle is fowardscattered
-        if currentlocation > depth
-            currentlocation = depth;
-            FWScatterdParticle = FWScatterdParticle + 1;
+        if currentlocation > 10
             break
         end
         %Recording the path that particle is taking
         locationindex(end + 1) = currentlocation;
         %Defining the particle is absorbed or scattered
         aDec = AbsorptionDecision(absoprtion_probability);
-        if aDec == 0
-            AbsorptionCount = AbsorptionCount + 1;
-        end
+        if aDec 
         %Interaction of particle is increased by 1
         currentInteraction = currentInteraction + 1;
     end
@@ -55,6 +49,12 @@ for c = 1:n
     particleterminationArray(end+1) = currentlocation;
     %Registering the total number of interaction that particle
     InteractionArray(end + 1) = currentInteraction;
+    %particle scattered out of medium
+    if currentlocation < 0
+        BWScatteredParticle = BWScatteredParticle + 1;
+    elseif currentlocation > depth
+        FWScatterdParticle = FWScatterdParticle + 1;
+    end
 end
 
 PrbAbs = AbsorptionCount / n
@@ -72,7 +72,7 @@ LocationIndexSigma = std(locationindex)
 xline(LocationIndexMu, 'color', 'g', "LineWidth", 2);
 xline(LocationIndexMu - LocationIndexSigma, 'color', 'r', 'LineWidth', 2, 'LineStyle', '--');
 xline(LocationIndexMu + LocationIndexSigma, 'color', 'r', 'LineWidth', 2, 'LineStyle', '--');
-ylim([0, 3.0 * n]); % Give some headroom above the bars.
+ylim([0, 1.5 * n]); % Give some headroom above the bars.
 yl = ylim;
 sMean = sprintf('  Mean = %.3f cm \n   SD = %.3f cm ', LocationIndexMu, LocationIndexSigma);
 text(binnumber * pathlength * 0.5, 0.9*yl(2), sMean, 'Color', 'r','FontWeight', 'bold', 'FontSize', 12, 'EdgeColor', 'b');
